@@ -33,15 +33,15 @@ def test_format_client_card_small():
 
 
 def test_format_client_card_truncates_pain():
-    long_answer = "А" * 200
+    long_answer = "А" * 100 + "КОНЕЦ"
     data = {
         "segment": "medium",
         "answers": {"q0": "компания", "q1": long_answer},
         "time_slots": "пятница"
     }
     card = format_client_card(data)
-    assert long_answer[:100] in card
-    assert long_answer[101:] not in card
+    assert long_answer[:100] in card    # 100 А's appear in card
+    assert "КОНЕЦ" not in card          # unique marker past position 100 is cut
 
 
 def test_format_marga_card_hot():
