@@ -4,10 +4,10 @@ After=network.target
 
 [Service]
 Type=simple
-User=marga
-WorkingDirectory=/home/marga/projects/vizitka-bot
-EnvironmentFile=/home/marga/projects/vizitka-bot/.env
-ExecStart=/home/marga/.venv/bin/python bot.py
+User=root
+WorkingDirectory=/root/projects/vizitka-bot
+EnvironmentFile=/root/projects/vizitka-bot/.env
+ExecStart=/root/projects/vizitka-bot/.venv/bin/python bot.py
 Restart=on-failure
 RestartSec=10
 
