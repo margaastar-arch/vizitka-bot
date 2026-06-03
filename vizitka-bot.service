@@ -1,0 +1,15 @@
+[Unit]
+Description=Vizitka Qualification Bot
+After=network.target
+
+[Service]
+Type=simple
+User=marga
+WorkingDirectory=/home/marga/projects/vizitka-bot
+EnvironmentFile=/home/marga/projects/vizitka-bot/.env
+ExecStart=/home/marga/.venv/bin/python bot.py
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
