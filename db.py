@@ -1,7 +1,7 @@
 # db.py
 import sqlite3
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 _DB_PATH = "vizitka_bot.db"
@@ -40,7 +40,7 @@ def _create_tables():
 
 
 def save_lead(user_id: int, username: Optional[str], source: str = "vizitka"):
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     with _conn() as conn:
         conn.execute("""
             INSERT INTO leads (user_id, username, source, created_at, last_active_at)
@@ -58,8 +58,8 @@ def save_lead(user_id: int, username: Optional[str], source: str = "vizitka"):
 
 
 def update_lead(user_id: int, **kwargs):
-    """Update any subset of columns. Also bumps last_active_at."""
-    kwargs["last_active_at"] = datetime.utcnow().isoformat()
+    """Update any subset of columns. Always bumps last_active_at to now. kwargs keys must be internal column names, never user input."""
+    kwargs["last_active_at"] = datetime.now(timezone.utc).isoformat()
     sets = ", ".join(f"{k} = ?" for k in kwargs)
     values = list(kwargs.values()) + [user_id]
     with _conn() as conn:
@@ -76,7 +76,7 @@ def get_lead(user_id: int) -> Optional[dict]:
 
 def get_stale_leads(hours: int = 24) -> list[dict]:
     """Leads that are not finished, not yet reminded, inactive for `hours` hours."""
-    cutoff = (datetime.utcnow() - timedelta(hours=hours)).isoformat()
+    cutoff = (datetime.now(timezone.utc) - timedelta(hours=hours)).isoformat()
     with _conn() as conn:
         rows = conn.execute("""
             SELECT * FROM leads

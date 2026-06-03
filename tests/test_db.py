@@ -45,9 +45,9 @@ def test_get_stale_leads_empty(tmp_db):
 
 def test_get_stale_leads_returns_old(tmp_db):
     import sqlite3
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
     db.save_lead(222, username="old_user", source="vizitka")
-    old_time = (datetime.utcnow() - timedelta(hours=25)).isoformat()
+    old_time = (datetime.now(timezone.utc) - timedelta(hours=25)).isoformat()
     conn = sqlite3.connect(tmp_db)
     conn.execute(
         "UPDATE leads SET last_active_at = ? WHERE user_id = ?",
