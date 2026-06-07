@@ -13,7 +13,13 @@ def _kb(*rows: list[tuple[str, str]]) -> InlineKeyboardMarkup:
 
 
 def consent_kb() -> InlineKeyboardMarkup:
-    return _kb([("Согласен(на)", "consent:yes"), ("Не согласен(на)", "consent:no")])
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="📄 Политика конфиденциальности", url="https://telegra.ph/Politika-konfidencialnosti-MargaA-Brief-06-07")],
+        [
+            InlineKeyboardButton(text="Согласен(на)", callback_data="consent:yes"),
+            InlineKeyboardButton(text="Не согласен(на)", callback_data="consent:no"),
+        ],
+    ])
 
 
 def segment_kb() -> InlineKeyboardMarkup:

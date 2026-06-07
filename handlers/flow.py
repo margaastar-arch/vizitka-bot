@@ -8,6 +8,7 @@ from states import Flow
 from questions import QUESTIONS
 from keyboards import budget_small_kb, budget_medium_kb, confirm_kb
 from logic import is_relevant, format_client_card
+from moderation import check as moderation_check
 import db
 
 router = Router()
@@ -81,6 +82,11 @@ async def handle_text_answer(message: Message, state: FSMContext):
         await message.answer("Пожалуйста, выберите вариант из кнопок выше.")
         return
 
+    blocked = moderation_check(message.text)
+    if blocked:
+        await message.answer(blocked)
+        return
+
     if not is_relevant(message.text):
         if not data.get("retry"):
             await state.update_data(retry=True)
@@ -103,6 +109,11 @@ async def handle_budget_answer(callback: CallbackQuery, state: FSMContext):
 
 @router.message(Flow.timeslot)
 async def handle_timeslot(message: Message, state: FSMContext):
+    blocked = moderation_check(message.text)
+    if blocked:
+        await message.answer(blocked)
+        return
+
     data = await state.get_data()
     time_slots = message.text
 
