@@ -4,7 +4,7 @@ import logging
 import db
 import config
 from aiogram import Bot, Dispatcher
-from aiogram.fsm.storage.memory import MemoryStorage
+from storage import SQLiteStorage
 from handlers.start import router as start_router
 from handlers.flow import router as flow_router
 from handlers.confirm import router as confirm_router
@@ -18,7 +18,7 @@ async def main():
     db.init(config.DB_PATH)
 
     bot = Bot(token=config.BOT_TOKEN)
-    dp = Dispatcher(storage=MemoryStorage())
+    dp = Dispatcher(storage=SQLiteStorage())
 
     # Order matters: start router first (catches /start globally)
     dp.include_router(start_router)

@@ -37,6 +37,43 @@ def _create_tables():
                 reminded        INTEGER DEFAULT 0
             )
         """)
+        # FSM storage: keeps each user's brief progress on disk so a bot
+        # restart no longer wipes the conversation and leaves users in silence.
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS fsm_state (
+                key   TEXT PRIMARY KEY,
+                state TEXT,
+                data  TEXT DEFAULT '{}'
+            )
+        """)
+
+
+def fsm_read(key: str) -> tuple[Optional[str], dict]:
+    """Return (state, data) for an FSM key, or (None, {}) if absent."""
+    with _conn() as conn:
+        row = conn.execute(
+            "SELECT state, data FROM fsm_state WHERE key = ?", (key,)
+        ).fetchone()
+    if not row:
+        return None, {}
+    data = json.loads(row["data"]) if row["data"] else {}
+    return row["state"], data
+
+
+def fsm_write_state(key: str, state: Optional[str]):
+    with _conn() as conn:
+        conn.execute("""
+            INSERT INTO fsm_state (key, state) VALUES (?, ?)
+            ON CONFLICT(key) DO UPDATE SET state = excluded.state
+        """, (key, state))
+
+
+def fsm_write_data(key: str, data: dict):
+    with _conn() as conn:
+        conn.execute("""
+            INSERT INTO fsm_state (key, data) VALUES (?, ?)
+            ON CONFLICT(key) DO UPDATE SET data = excluded.data
+        """, (key, json.dumps(data, ensure_ascii=False)))
 
 
 def save_lead(user_id: int, username: Optional[str], source: str = "vizitka"):
