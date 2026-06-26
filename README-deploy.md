@@ -14,7 +14,7 @@
 3. Create .env on VPS:
    ```
    BOT_TOKEN=<token from BotFather>
-   MARGA_CHAT_ID=1116172523
+   MARGA_CHAT_ID=<твой_chat_id>
    DB_PATH=vizitka_bot.db
    ```
 
